@@ -171,6 +171,7 @@ impl EpiIntegration {
             output: Default::default(),
             storage,
             gl,
+            copy_pixels:None,
         };
 
         if prefer_dark_mode == Some(true) {

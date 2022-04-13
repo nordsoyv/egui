@@ -16,6 +16,8 @@ pub mod file_storage;
 pub use egui; // Re-export for user convenience
 pub use glow; // Re-export for user convenience
 
+use crate::egui::Rect;
+
 /// The is is how your app is created.
 ///
 /// You can use the [`CreationContext`] to setup egui, restore state, setup OpenGL things, etc.
@@ -134,6 +136,8 @@ pub trait App {
     fn warm_up_enabled(&self) -> bool {
         false
     }
+
+    fn get_pixel_data(&self, bytes : &[u8], width: i32, height: i32);
 }
 
 /// Options controlling the behavior of a native window.
@@ -265,6 +269,8 @@ pub struct Frame {
     /// A reference to the underlying [`glow`] (OpenGL) context.
     #[doc(hidden)]
     pub gl: std::rc::Rc<glow::Context>,
+
+    pub copy_pixels: Option<Rect>,
 }
 
 impl Frame {

@@ -1,5 +1,5 @@
 use egui_winit::winit;
-
+use glow::{HasContext, PixelPackData};
 struct RequestRepaintEvent;
 
 #[allow(unsafe_code)]
@@ -174,6 +174,27 @@ pub fn run(app_name: &str, native_options: &epi::NativeOptions, app_creator: epi
                 gl_window.window().request_redraw();
             }
             _ => (),
+        }
+        if integration.frame.copy_pixels.is_some() {
+            unsafe {
+                let rect = integration.frame.copy_pixels.unwrap();
+                integration.frame.copy_pixels = None;
+                let top_left = rect.min;
+                let bottom_right = rect.max;
+                let width = bottom_right.x - top_left.x;
+                let height = bottom_right.y - top_left.y;
+                let mut bytes = vec![0 as u8; (width * height * 4.0) as usize];
+                gl.read_pixels(
+                    0,
+                    0,
+                    width as i32,
+                    height as i32,
+                    0x1908,
+                    0x8035,
+                    PixelPackData::Slice(&mut bytes),
+                );
+                app.get_pixel_data(&bytes, width as i32, height as i32);
+            }
         }
     });
 }
